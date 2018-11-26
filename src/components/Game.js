@@ -6,9 +6,15 @@ import Board from './Board';
 const CELL_SIZE = 20;
 
 const Wrapper = styled.section`
-  padding: 4em;
+  padding: 4em 0;
   background: papayawhip;
   color: palevioletred;
+  display: flex;
+  justify-content: center;
+`;
+
+const Title = styled.h1`
+  text-align: center;
 `;
 
 const Button = styled.button`
@@ -33,11 +39,11 @@ class Game extends React.Component {
 
     this.interval = 100;
     this.isExtinction = false;
+    this.generation = 0;
 
     this.state = {
       cells: this.makeEmptyCells(),
       isRunning: false,
-      generation: 0,
     };
   }
 
@@ -68,11 +74,15 @@ class Game extends React.Component {
   resetGame() {
     this.stopGame();
     this.setState({cells: this.makeEmptyCells()});
-    this.setState({generation: 0});
+    this.generation = 0;
     this.isExtinction = false;
   }
 
   runIteration() {
+    if (this.isExtinction) {
+      console.log(this.generation);
+      this.generation = 0;
+    }
     const {cells} = this.state;
     let newCells = this.makeEmptyCells();
 
@@ -99,12 +109,11 @@ class Game extends React.Component {
     }
 
     this.setState({cells: newCells});
+    this.generation++;
 
     if (this.isExtinction) {
       this.stopGame();
       return;
-    } else {
-      this.setState({generation: this.state.generation + 1});
     }
 
     this.timeoutHandler = window.setTimeout(() => {
@@ -119,18 +128,21 @@ class Game extends React.Component {
   }
 
   render() {
-    const {cells, isRunning, generation} = this.state;
+    const {cells, isRunning} = this.state;
     return (
         <Wrapper>
-          <Board grid={CELL_SIZE} cells={cells} onClick={(row, col) => this.handleClick(row, col)}></Board>
+          <div>
+            <Title>Game Of Life</Title>
+            <Board grid={CELL_SIZE} cells={cells} onClick={(row, col) => this.handleClick(row, col)}></Board>
 
-          <div className="controls">
-            <p>Generations: {generation} {this.isExtinction ? '(Extinction)' : ''}</p>
-            {isRunning ?
-                <Button onClick={() => this.stopGame()}>Stop</Button> :
-                <Button onClick={() => this.runGame()}>Run</Button>
-            }
-            <Button onClick={() => this.resetGame()}>Reset</Button>
+            <div className="controls">
+              <p>Generations: {this.generation} {this.isExtinction ? '(Extinction)' : ''}</p>
+              {isRunning ?
+                  <Button onClick={() => this.stopGame()}>Stop</Button> :
+                  <Button onClick={() => this.runGame()}>Run</Button>
+              }
+              <Button onClick={() => this.resetGame()}>Reset</Button>
+            </div>
           </div>
         </Wrapper>
     )

@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import Cell from './Cell';
 
 const BoardBase = styled.div`
-  width: 500px;
-  height: 500px;
+  width: 400px;
+  height: 400px;
 `;
 
 const Rows = styled.div`
@@ -18,7 +18,7 @@ class Board extends React.Component {
     return (
         <Cell
             key={row + col}
-            width={500 / this.props.grid}
+            width={400 / this.props.grid}
             isAlive={this.props.cells[row][col]}
             onClick={() => this.props.onClick(row, col)}
         ></Cell>
