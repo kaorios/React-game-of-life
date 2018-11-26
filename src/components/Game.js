@@ -1,151 +1,82 @@
 import React from 'react';
-import styled from 'styled-components';
+import Board from './Board';
 
 const CELL_SIZE = 20;
-const WIDTH = 800;
-const HEIGHT = 800;
-
-const Board = styled.div`
-  position: relative;
-  margin: 0 auto;
-  background-color: #000;
-  background-image:
-      linear-gradient(#333 1px, transparent 1px),
-      linear-gradient(90deg, #333 1px, transparent 1px);
-
-`;
-
-const Grid = styled.div`
-  background: #ccc;
-  position: absolute;
-`;
-
-
-class Cell extends React.Component {
-  render() {
-    const {x, y} = this.props;
-    return (
-        <Grid style={{
-          left: `${CELL_SIZE * x + 1}px`,
-          top: `${CELL_SIZE * y + 1}px`,
-          width: `${CELL_SIZE - 1}px`,
-          height: `${CELL_SIZE - 1}px`,
-        }}></Grid>
-    );
-  }
-}
 
 class Game extends React.Component {
   constructor() {
     super();
-    this.rows = HEIGHT / CELL_SIZE;
-    this.cols = WIDTH / CELL_SIZE;
-    this.board = this.makeEmptyBoard();
+
+    this.interval = 100;
+
+    this.state = {
+      cells: this.makeEmptyCells(),
+      isRunning: false,
+    };
   }
 
-  state = {
-    cells: [],
-    interval: 100,
-    isRunning: false,
-  };
-
-  makeEmptyBoard() {
-    let board = [];
-    for (let y = 0; y < this.rows; y++) {
-      board[y] = [];
-      for (let x = 0; x < this.cols; x++) {
-        board[y][x] = false;
-      }
-    }
-    return board;
-  }
-
-  makeCells() {
+  makeEmptyCells() {
     let cells = [];
-    for (let y = 0; y < this.rows; y++) {
-      for (let x = 0; x < this.cols; x++) {
-        if (this.board[y][x]) {
-          cells.push({ x, y });
-        }
+    for (let y = 0; y < CELL_SIZE; y++) {
+      cells[y] = [];
+      for (let x = 0; x < CELL_SIZE; x++) {
+        cells[y][x] = false;
       }
     }
     return cells;
   }
 
-  getElementOffset() {
-    const rect = this.boardRef.getBoundingClientRect();
-    const doc = document.documentElement;
-    return {
-      x: (rect.left + window.pageXOffset) - doc.clientLeft,
-      y: (rect.top + window.pageYOffset) - doc.clientTop,
-    };
-  }
-
-  handleClick = (event) => {
-    const elemOffset = this.getElementOffset();
-    const offsetX = event.clientX - elemOffset.x;
-    const offsetY = event.clientY - elemOffset.y;
-
-    const x = Math.floor(offsetX / CELL_SIZE);
-    const y = Math.floor(offsetY / CELL_SIZE);
-    if (x >= 0 && x <= this.cols && y >= 0 && y <= this.rows) {
-      this.board[y][x] = !this.board[y][x];
-    }
-    this.setState({cells: this.makeCells()});
-  }
-
-  runGame = () => {
-    this.setState({ isRunning: true });
+  runGame() {
+    this.setState({isRunning: true});
     this.runIteration();
   }
-  stopGame = () => {
-    this.setState({ isRunning: false });
+
+  stopGame() {
+    this.setState({isRunning: false});
     if (this.timeoutHandler) {
       window.clearTimeout(this.timeoutHandler);
       this.timeoutHandler = null;
     }
   }
-  handleIntervalChange = (event) => {
-    this.setState({ interval: event.target.value });
-  }
 
   runIteration() {
-    let newBoard = this.makeEmptyBoard();
+    const {cells} = this.state;
+    let newCells = this.makeEmptyCells();
 
-    for (let y = 0; y < this.rows; y++) {
-      for (let x = 0; x < this.cols; x++) {
-        let neighbors = this.calculateNeighbors(this.board, x, y);
-        if (this.board[y][x]) {
+    for (let row = 0; row < CELL_SIZE; row++) {
+      for (let col = 0; col < CELL_SIZE; col++) {
+        let neighbors = this.calculateNeighbors(cells, row, col);
+
+        if (cells[row][col]) {
           if (neighbors === 2 || neighbors === 3) {
-            newBoard[y][x] = true;
+            newCells[row][col] = true;
           } else {
-            newBoard[y][x] = false;
+            newCells[row][col] = false;
           }
         } else {
-          if (!this.board[y][x] && neighbors === 3) {
-            newBoard[y][x] = true;
+          if (neighbors === 3) {
+            newCells[row][col] = true;
           }
         }
       }
     }
 
-    this.board = newBoard;
-    this.setState({ cells: this.makeCells() });
+    this.setState({cells: newCells});
 
     this.timeoutHandler = window.setTimeout(() => {
       this.runIteration();
-    }, this.state.interval);
+    }, this.interval);
   }
 
-  calculateNeighbors(board, x, y) {
+  calculateNeighbors(cells, row, col) {
     let neighbors = 0;
     const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
     for (let i = 0; i < dirs.length; i++) {
       const dir = dirs[i];
-      let y1 = y + dir[0];
-      let x1 = x + dir[1];
+      let row1 = row + dir[0];
+      let col1 = col + dir[1];
 
-      if (x1 >= 0 && x1 < this.cols && y1 >= 0 && y1 < this.rows && board[y1][x1]) {
+      if (col1 >= 0 && col1 < CELL_SIZE && row1 >= 0 && row1 < CELL_SIZE && cells[row1][col1]) {
         neighbors++;
       }
     }
@@ -153,32 +84,22 @@ class Game extends React.Component {
     return neighbors;
   }
 
+  handleClick(row, col) {
+    const newCells = this.state.cells.slice();
+    newCells[row][col] = !newCells[row][col];
+    this.setState({cells: newCells});
+  }
+
   render() {
     const {cells, isRunning} = this.state;
     return (
         <div>
-          <Board
-               style={{
-                 width: WIDTH, height: HEIGHT,
-                 backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`
-               }}
-               onClick={this.handleClick}
-               ref={(n) => {
-                 this.boardRef = n;
-               }}>
-            {cells.map(cell => (
-                <Cell x={cell.x} y={cell.y}
-                      key={`${cell.x},${cell.y}`}/>
-            ))}
-          </Board>
+          <Board grid={CELL_SIZE} cells={cells} onClick={(row, col) => this.handleClick(row, col)}></Board>
+
           <div className="controls">
-            Update every <input value={this.state.interval}
-                                onChange={this.handleIntervalChange} /> msec
             {isRunning ?
-                <button className="button"
-                        onClick={this.stopGame}>Stop</button> :
-                <button className="button"
-                        onClick={this.runGame}>Run</button>
+                <button onClick={() => this.stopGame()}>Stop</button> :
+                <button onClick={() => this.runGame()}>Run</button>
             }
           </div>
         </div>
