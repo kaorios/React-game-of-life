@@ -13,10 +13,11 @@ const Rows = styled.div`
 `;
 
 class Board extends React.Component {
-  
+
   renderCell(row, col) {
     return (
         <Cell
+            key={row + col}
             width={500 / this.props.grid}
             isAlive={this.props.cells[row][col]}
             onClick={() => this.props.onClick(row, col)}
@@ -32,7 +33,7 @@ class Board extends React.Component {
       for (let col = 0; col < this.props.grid; col++) {
         rows.push(this.renderCell(row, col));
       }
-      cells.push(<Rows>{rows}</Rows>)
+      cells.push(<Rows key={row}>{rows}</Rows>)
     }
     return cells;
   };
