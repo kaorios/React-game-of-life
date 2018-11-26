@@ -4,7 +4,7 @@ import styled from "styled-components";
 const Grid = styled.div`
   box-sizing: border-box;
   border: 1px solid #eee;
-  background: ${props => props.isAlive ? "palevioletred" : "#ccc"};
+  background: ${props => props.isAlive ? "palevioletred" : "rgba(255,255,255,.7)"};
   cursor: pointer;
 `;
 

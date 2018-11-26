@@ -1,7 +1,20 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import Board from './Board';
 
 const CELL_SIZE = 20;
+
+const Button = styled.button`
+  display: inline-block;
+  background: palevioletred;
+  color: #fff;
+  border: none;
+  font-size: 1.2rem;
+  padding: .5em 2em;
+  font-weight: bold;
+  cursor: pointer;
+`;
 
 class Game extends React.Component {
   constructor() {
@@ -47,7 +60,7 @@ class Game extends React.Component {
 
     for (let row = 0; row < CELL_SIZE; row++) {
       for (let col = 0; col < CELL_SIZE; col++) {
-        let neighbors = this.calculateNeighbors(cells, row, col);
+        let neighbors = calculateNeighbors(cells, row, col);
 
         if (cells[row][col]) {
           if (neighbors === 2 || neighbors === 3) {
@@ -79,22 +92,6 @@ class Game extends React.Component {
     }, this.interval);
   }
 
-  calculateNeighbors(cells, row, col) {
-    let neighbors = 0;
-    const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
-    for (let i = 0; i < dirs.length; i++) {
-      const dir = dirs[i];
-      let row1 = row + dir[0];
-      let col1 = col + dir[1];
-
-      if (col1 >= 0 && col1 < CELL_SIZE && row1 >= 0 && row1 < CELL_SIZE && cells[row1][col1]) {
-        neighbors++;
-      }
-    }
-
-    return neighbors;
-  }
-
   handleClick(row, col) {
     const newCells = this.state.cells.slice();
     newCells[row][col] = !newCells[row][col];
@@ -110,8 +107,8 @@ class Game extends React.Component {
           <div className="controls">
             <p>Generations: {this.state.generation}</p>
             {isRunning ?
-                <button onClick={() => this.stopGame()}>Stop</button> :
-                <button onClick={() => this.runGame()}>Run</button>
+                <Button onClick={() => this.stopGame()}>Stop</Button> :
+                <Button onClick={() => this.runGame()}>Run</Button>
             }
           </div>
         </div>
@@ -120,3 +117,20 @@ class Game extends React.Component {
 }
 
 export default Game;
+
+function calculateNeighbors(cells, row, col) {
+  let neighbors = 0;
+  const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]];
+  for (let i = 0; i < dirs.length; i++) {
+    const dir = dirs[i];
+    let row1 = row + dir[0];
+    let col1 = col + dir[1];
+
+    if (col1 >= 0 && col1 < CELL_SIZE && row1 >= 0 && row1 < CELL_SIZE && cells[row1][col1]) {
+      neighbors++;
+    }
+  }
+
+  return neighbors;
+}
+

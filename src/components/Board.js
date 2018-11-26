@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import Cell from './Cell';
 
 const BoardBase = styled.div`
-  background: #000;
   width: 500px;
   height: 500px;
 `;
@@ -14,10 +13,7 @@ const Rows = styled.div`
 `;
 
 class Board extends React.Component {
-  constructor(prop) {
-    super(prop);
-  }
-
+  
   renderCell(row, col) {
     return (
         <Cell
