@@ -5,6 +5,12 @@ import Board from './Board';
 
 const CELL_SIZE = 20;
 
+const Wrapper = styled.section`
+  padding: 4em;
+  background: papayawhip;
+  color: palevioletred;
+`;
+
 const Button = styled.button`
   display: inline-block;
   background: palevioletred;
@@ -101,7 +107,7 @@ class Game extends React.Component {
   render() {
     const {cells, isRunning} = this.state;
     return (
-        <div>
+        <Wrapper>
           <Board grid={CELL_SIZE} cells={cells} onClick={(row, col) => this.handleClick(row, col)}></Board>
 
           <div className="controls">
@@ -111,7 +117,7 @@ class Game extends React.Component {
                 <Button onClick={() => this.runGame()}>Run</Button>
             }
           </div>
-        </div>
+        </Wrapper>
     )
   }
 }
