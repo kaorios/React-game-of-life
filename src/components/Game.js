@@ -12,6 +12,7 @@ class Game extends React.Component {
     this.state = {
       cells: this.makeEmptyCells(),
       isRunning: false,
+      generation: 0,
     };
   }
 
@@ -42,6 +43,7 @@ class Game extends React.Component {
   runIteration() {
     const {cells} = this.state;
     let newCells = this.makeEmptyCells();
+    let isExtinction = true;
 
     for (let row = 0; row < CELL_SIZE; row++) {
       for (let col = 0; col < CELL_SIZE; col++) {
@@ -50,18 +52,27 @@ class Game extends React.Component {
         if (cells[row][col]) {
           if (neighbors === 2 || neighbors === 3) {
             newCells[row][col] = true;
+            isExtinction = false;
           } else {
             newCells[row][col] = false;
           }
         } else {
           if (neighbors === 3) {
             newCells[row][col] = true;
+            isExtinction = false;
           }
         }
       }
     }
 
     this.setState({cells: newCells});
+    this.setState({generation: this.state.generation+1});
+
+    if (isExtinction) {
+      this.setState({generation: `${this.state.generation} (Extinction)`});
+      this.stopGame();
+      return;
+    }
 
     this.timeoutHandler = window.setTimeout(() => {
       this.runIteration();
@@ -97,6 +108,7 @@ class Game extends React.Component {
           <Board grid={CELL_SIZE} cells={cells} onClick={(row, col) => this.handleClick(row, col)}></Board>
 
           <div className="controls">
+            <p>Generations: {this.state.generation}</p>
             {isRunning ?
                 <button onClick={() => this.stopGame()}>Stop</button> :
                 <button onClick={() => this.runGame()}>Run</button>
