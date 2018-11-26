@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
-import './App.css';
-import Game from './Game';
+import styled from 'styled-components';
+
+import Game from './components/Game';
+
+const Wrapper = styled.section`
+  padding: 4em;
+  background: papayawhip;
+  color: palevioletred;
+`;
+
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <Wrapper>
         <Game></Game>
-      </div>
+      </Wrapper>
     );
   }
 }

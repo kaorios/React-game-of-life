@@ -1,20 +1,36 @@
 import React from 'react';
-import './Game.css';
+import styled from 'styled-components';
 
 const CELL_SIZE = 20;
 const WIDTH = 800;
 const HEIGHT = 800;
 
+const Board = styled.div`
+  position: relative;
+  margin: 0 auto;
+  background-color: #000;
+  background-image:
+      linear-gradient(#333 1px, transparent 1px),
+      linear-gradient(90deg, #333 1px, transparent 1px);
+
+`;
+
+const Grid = styled.div`
+  background: #ccc;
+  position: absolute;
+`;
+
+
 class Cell extends React.Component {
   render() {
     const {x, y} = this.props;
     return (
-        <div className="Cell" style={{
+        <Grid style={{
           left: `${CELL_SIZE * x + 1}px`,
           top: `${CELL_SIZE * y + 1}px`,
           width: `${CELL_SIZE - 1}px`,
           height: `${CELL_SIZE - 1}px`,
-        }}/>
+        }}></Grid>
     );
   }
 }
@@ -141,7 +157,7 @@ class Game extends React.Component {
     const {cells, isRunning} = this.state;
     return (
         <div>
-          <div className="Board"
+          <Board
                style={{
                  width: WIDTH, height: HEIGHT,
                  backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`
@@ -154,7 +170,7 @@ class Game extends React.Component {
                 <Cell x={cell.x} y={cell.y}
                       key={`${cell.x},${cell.y}`}/>
             ))}
-          </div>
+          </Board>
           <div className="controls">
             Update every <input value={this.state.interval}
                                 onChange={this.handleIntervalChange} /> msec
