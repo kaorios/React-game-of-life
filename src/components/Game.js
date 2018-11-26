@@ -19,11 +19,11 @@ const Title = styled.h1`
 
 const Button = styled.button`
   display: inline-block;
-  background: palevioletred;
+  background: ${props => props.color ? props.color : "palevioletred"};
   color: #fff;
   border: none;
-  font-size: 1.2rem;
-  padding: .5em 2em;
+  font-size: 1rem;
+  padding: 1em 2em;
   font-weight: bold;
   cursor: pointer;
   outline: none;
@@ -153,8 +153,8 @@ class Game extends React.Component {
                   <Button onClick={() => this.stopGame()}>Stop</Button> :
                   <Button onClick={() => this.runGame()}>Run</Button>
               }
-              <Button onClick={() => this.resetGame()}>Reset</Button>
-              <Button onClick={() => this.createRandomCells()}>Random</Button>
+              <Button onClick={() => this.resetGame()} color={'#78909C'}>Reset</Button>
+              <Button onClick={() => this.createRandomCells()} color={'#78909C'}>Random</Button>
             </div>
           </div>
         </Wrapper>
