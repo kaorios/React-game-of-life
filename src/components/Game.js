@@ -78,6 +78,18 @@ class Game extends React.Component {
     this.isExtinction = false;
   }
 
+  createRandomCells() {
+    let newCells = this.makeEmptyCells();
+
+    for (let y = 0; y < CELL_SIZE; y++) {
+      newCells[y] = [];
+      for (let x = 0; x < CELL_SIZE; x++) {
+        newCells[y][x] = Math.round(Math.random()) ? true : false;
+      }
+    }
+    this.setState({cells: newCells});
+  }
+
   runIteration() {
     if (this.isExtinction) {
       console.log(this.generation);
@@ -142,6 +154,7 @@ class Game extends React.Component {
                   <Button onClick={() => this.runGame()}>Run</Button>
               }
               <Button onClick={() => this.resetGame()}>Reset</Button>
+              <Button onClick={() => this.createRandomCells()}>Random</Button>
             </div>
           </div>
         </Wrapper>
